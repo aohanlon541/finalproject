@@ -1,0 +1,77 @@
+{% extends "tennis-match/layout.html" %}
+
+{% block body %}
+
+    <h2>Register</h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input class="form-control" type="email" name="email" placeholder="Email Address">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="password" placeholder="Password">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
+        </div>
+          <div class="form-group">
+              <label for="level">UTSA Level</label>
+              <select class="form-control" id="level">
+                  <option>2.5</option>
+                  <option>3.0</option>
+                  <option>3.5</option>
+                  <option>4.0</option>
+                  <option>4.5</option>
+                  <option>5.0</option>
+              </select>
+          </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" id="female" value="female" checked>
+            <label class="form-check-label" for="female">
+                Female
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" id="male" value="male">
+            <label class="form-check-label" for="male">
+                Male
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" id="non-binary" value="non-binary">
+            <label class="form-check-label" for="non-binary">
+                Non-Binary
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="singles" id="singles">
+            <label class="form-check-label" for="singles">
+                Singles
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="doubles" id="doubles">
+            <label class="form-check-label" for="doubles">
+                Doubles
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="mixedDoubles" id="mixedDoubles">
+            <label class="form-check-label" for="mixedDoubles">
+                Mixed Doubles
+            </label>
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="text" name="picture" placeholder="Profile Picture URL">
+        </div>
+        <input class="btn btn-primary" type="submit" value="Register">
+    </form>
+
+    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+
+{% endblock %}
