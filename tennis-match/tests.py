@@ -133,3 +133,5 @@ class TestSum(TestCase):
         edited_message = Message.objects.get(match=match)
         self.assertEqual(edited_message.text, 'This is a test post 2 - edited!')
 
+    # def test_update_user(self):
+
