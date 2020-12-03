@@ -13,11 +13,11 @@ class User(AbstractUser):
         ('M', "Male"),
         ('NB', "Non-binary"),
     )
-    level = models.DecimalField(max_digits=2, decimal_places=1)
-    gender = models.CharField(max_length=2, choices=gender)
-    singles = models.BooleanField()
-    doubles = models.BooleanField()
-    mixed_doubles = models.BooleanField()
+    level = models.DecimalField(max_digits=2, decimal_places=1, null=True)
+    gender = models.CharField(max_length=2, choices=gender, null=True)
+    singles = models.BooleanField(null=True)
+    doubles = models.BooleanField(null=True)
+    mixed_doubles = models.BooleanField(null=True)
     picture = models.CharField(max_length=1000, null=True)
 
     def serialize(self):
@@ -33,7 +33,7 @@ class User(AbstractUser):
             'picture': self.picture
         }
 
-    objects = UserManager()
+    # objects = UserManager()
 
 
 class Match(models.Model):
@@ -57,6 +57,7 @@ class Match(models.Model):
         return {
             'id': self.id,
             'match': [user.email for user in self.match.all()],
+            'match_ids': [user.id for user in self.match.all()],
             'created_by': self.created_by.email,
             'created_date': self.created_date.strftime("%b %d %Y, %I:%M %p"),
             'type': self.type,

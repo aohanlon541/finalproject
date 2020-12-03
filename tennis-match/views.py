@@ -9,34 +9,79 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Match, Message
 from . import util
-from .forms import RegisterForm
 
 
 def index(request):
     # Authenticated users view their inbox
     if request.user.is_authenticated:
-        util.create_new_matches(request.user)
-        return JsonResponse({
-            'new_matches': util.get_new_matches(request.user),
-            'existing_matches': util.get_existing_matches(request.user)
-        }, status=200, safe=False)
+        return render(request, "tennis-match/index.html")
     # Everyone else is prompted to sign in
     else:
         return HttpResponseRedirect(reverse("login"))
 
 
+@login_required
+def get_matches(request):
+    util.create_new_matches(request.user)
+    return JsonResponse({
+        'user': request.user.serialize(),
+        'new_matches': util.get_new_matches(request.user),
+        'existing_matches': util.get_existing_matches(request.user),
+    }, status=200, safe=False)
+
+
+@login_required
+def get_new_matches(request):
+    return JsonResponse({
+        'new_matches': util.get_new_matches(request.user),
+    }, status=200, safe=False)
+
+
+@login_required
+def get_existing_matches(request):
+    return JsonResponse({
+        'existing_matches': util.get_existing_matches(request.user),
+    }, status=200, safe=False)
+
+
+@csrf_exempt
+@login_required
+def edit_user(request):
+    if request.method == "POST":
+        try:
+            user = request.user
+            data = json.loads(request.body)
+            user.level = data['level']
+            user.gender = data['gender']
+            user.singles = data['singles']
+            user.doubles = data['doubles']
+            user.mixed_doubles = data['mixed_doubles']
+            user.picture = data['picture']
+            user.save()
+            return HttpResponse(status=200)
+        except:
+            return HttpResponse(status=400)
+
+
 @csrf_exempt
 @login_required
 def get_match(request, match_id):
-    try:
-        match = Match.objects.get(id=match_id)
-        messages = Message.objects.filter(match=match)
-        return JsonResponse({
-            'match': match.serialize(),
-            'messages': [message.serialize() for message in messages]
-        }, status=200, safe=False)
-    except Exception:
-        return HttpResponse(status=400)
+    if request.method == "PUT":
+        try:
+            match = Match.objects.get(id=match_id)
+            messages = Message.objects.filter(match=match)
+            users = User.objects.filter(id__in=match.serialize()['match_ids'])
+
+            match.new = False
+            match.save()
+
+            return JsonResponse({
+                'match': match.serialize(),
+                'users': [match_users.serialize() for match_users in users],
+                'messages': [match_message.serialize() for match_message in messages]
+            }, status=200, safe=False)
+        except Exception as e:
+            return HttpResponse(status=400)
 
 
 @csrf_exempt
@@ -73,6 +118,7 @@ def login_view(request):
         # Attempt to sign user in
         email = request.POST["email"]
         password = request.POST["password"]
+
         user = authenticate(request, username=email, password=password)
 
         # Check if authentication successful
@@ -94,25 +140,18 @@ def logout_view(request):
 
 def register(request):
     if request.method == "POST":
-        form = RegisterForm(request.POST)
-        email = form["email"]
+        email = request.POST["email"]
 
         # Ensure password matches confirmation
-        password = form["password"]
-        confirmation = form["confirmation"]
-        if password.data != confirmation.data:
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        if password != confirmation:
             return render(request, "tennis-match/register.html", {
                 "message": "Passwords must match."
             })
-        level = form["level"]
-        gender = form["gender"]
-        singles = form["singles"]
-        doubles = form["doubles"]
-        mixed_doubles = form["mixed_doubles"]
-        picture = form["picture"]
         # Attempt to create new user
         try:
-            user = User.objects.create_user(email, password, level, gender, singles, doubles, mixed_doubles, picture)
+            user = User.objects.create_user(email, email, password)
             user.save()
         except IntegrityError as e:
             print(e)

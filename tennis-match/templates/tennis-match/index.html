@@ -2,36 +2,73 @@
 {% load static %}
 
 {% block body %}
-    <h2>{{ request.user.email }}</h2>
-
-    <button class="btn btn-sm btn-outline-primary" id="inbox">Inbox</button>
-    <button class="btn btn-sm btn-outline-primary" id="compose">Compose</button>
-    <button class="btn btn-sm btn-outline-primary" id="sent">Sent</button>
-    <button class="btn btn-sm btn-outline-primary" id="archived">Archived</button>
-    <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
-    <hr>
-
-    <div id="emails-view">
-    </div>
-
-    <div id="compose-view">
-        <h3>New Email</h3>
-        <form id="compose-form">
-            <div class="form-group">
-                From: <input disabled class="form-control" value="{{ request.user.email }}">
-            </div>
-            <div class="form-group">
-                To: <input id="compose-recipients" class="form-control">
-            </div>
-            <div class="form-group">
-                <input class="form-control" id="compose-subject" placeholder="Subject">
-            </div>
-            <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
-            <input type="submit" class="btn btn-primary"/>
+    <div id="complete-user-info">
+        <h4>Complete Your Profile & Get Matches</h4>
+        <form>
+          <div class="form-group">
+              <label for="level">USTA Level</label>
+              <select class="form-control" id="level">
+                  <option>2.5</option>
+                  <option>3.0</option>
+                  <option>3.5</option>
+                  <option>4.0</option>
+                  <option>4.5</option>
+                  <option>5.0</option>
+              </select>
+          </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" id="female" value="female" checked>
+            <label class="form-check-label" for="female">
+                Female
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" id="male" value="male">
+            <label class="form-check-label" for="male">
+                Male
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" id="non-binary" value="non-binary">
+            <label class="form-check-label" for="non-binary">
+                Non-Binary
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="singles" id="singles">
+            <label class="form-check-label" for="singles">
+                Singles
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="doubles" id="doubles">
+            <label class="form-check-label" for="doubles">
+                Doubles
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="mixedDoubles" id="mixedDoubles">
+            <label class="form-check-label" for="mixedDoubles">
+                Mixed Doubles
+            </label>
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="text" name="picture" id="picture" placeholder="Profile Picture URL">
+        </div>
+            <input class="btn btn-primary" type="submit" value="Complete" id="update-user-submit" />
         </form>
     </div>
-{% endblock %}
 
-{% block script %}
-    <script src="{% static 'mail/inbox.js' %}"></script>
+    <div id="new-matches-div">
+        <h3>New Matches</h3>
+        <div id="new-matches"></div>
+        <hr />
+    </div>
+
+    <div id="existing-matches-div">
+        <h3>Existing Matches</h3>
+        <div id="existing-matches"></div>
+    </div>
+
+    <div id="match-view"></div>
 {% endblock %}
