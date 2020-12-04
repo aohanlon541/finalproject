@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function load_matches() {
     fetch('/matches', {
-        method: 'GET',
+        method: 'POST',
     }).then(response => response.json()
     ).then((results) => {
         if (results.user['gender'] === null) {
@@ -82,9 +82,11 @@ function load_match(id) {
         method: 'PUT'
     }).then(response => response.json()
     ).then((results) => {
-        const body = create_match_view(results);
         const matchView = document.querySelector('#match-view');
+        const body = create_match_view(results);
+        const messages = create_messages_view(results);
         matchView.appendChild(body);
+        matchView.appendChild(messages);
     });
 }
 
@@ -98,6 +100,22 @@ function update_user() {
         document.querySelector('#complete-user-info').style.display = 'none';
         load_matches();
     });
+}
+
+function add_message(matchId) {
+    event.preventDefault();
+    fetch(`message/${matchId}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            text: document.querySelector('#message-textarea').value
+        })
+    }).then(response => response.json()
+    ).then((results) => {
+        console.log(results);
+        const newMessage = append_message(results['new_message']);
+        document.querySelector('#message-container').appendChild(newMessage);
+        document.querySelector('#message-textarea').value = '';
+    })
 }
 
 function create_match_card(match) {
@@ -118,11 +136,6 @@ function create_match_card(match) {
 
     const matchButton = document.createElement('button');
     matchButton.innerHTML = "See details";
-    //
-    // const postText = document.createElement('p');
-    // postText.setAttribute('key', card.post['id']);
-    // postText.className = `card-subtitle mb-2 text-muted ${card.post['id']}`;
-    // postText.innerHTML = card.post.text;
 
     matchBody.appendChild(matchTitle);
     matchBody.appendChild(matchSubTitle);
@@ -159,6 +172,50 @@ function create_match_view(match) {
     return body
 }
 
+function create_messages_view(match) {
+    const messageContainer = document.createElement('div');
+    messageContainer.setAttribute('id', 'message-container');
+    const messages = match['messages'];
+
+    const form = document.createElement('form')
+    const textarea = document.createElement('textarea');
+    textarea.setAttribute('id', 'message-textarea');
+    const submitButton = document.createElement('input');
+    submitButton.setAttribute('type', 'submit');
+    submitButton.setAttribute('id', 'message-submit');
+    form.appendChild(textarea);
+    form.appendChild(submitButton);
+    messageContainer.appendChild(form);
+
+    console.log(match['match']['id'])
+    submitButton.addEventListener('click', () => add_message(match['match']['id']))
+
+    messages.map(message => {
+        let messageDiv = append_message(message);
+        messageContainer.appendChild(messageDiv);
+    });
+
+    return messageContainer;
+}
+
+function append_message(message) {
+    let messageDiv = document.createElement('div');
+
+    let messageAuthor = document.createElement('p');
+    messageAuthor.innerHTML = message['created_by'];
+
+    let messageText = document.createElement('p');
+    messageText.innerHTML = message['text'];
+
+    let messageTimestamp = document.createElement('p');
+    messageTimestamp.innerHTML = message['created_date'];
+
+    messageDiv.appendChild(messageAuthor);
+    messageDiv.appendChild(messageText);
+    messageDiv.appendChild(messageTimestamp);
+
+    return messageDiv;
+}
 
 function map_edit_user() {
     return JSON.stringify({

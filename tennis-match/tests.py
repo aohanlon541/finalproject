@@ -15,7 +15,6 @@ class TestSum(TestCase):
             gender='F',
             singles=True,
             doubles=True,
-            mixed_doubles=True
         )
         self.client.force_login(self.user)
 
@@ -29,7 +28,6 @@ class TestSum(TestCase):
             gender='F',
             singles=True,
             doubles=True,
-            mixed_doubles=True
         )
         self.assertEqual(User.objects.count(), 2)
 
@@ -60,12 +58,34 @@ class TestSum(TestCase):
             gender='F',
             singles=True,
             doubles=True,
-            mixed_doubles=True
         )
-        self.assertEqual(User.objects.count(), 2)
-        response = self.client.get('/')
+        User.objects.create_user(
+            username='user2',
+            password='12345678',
+            email='user2@user2.com',
+            level=3.0,
+            gender='F',
+            singles=True,
+            doubles=True,
+        )
+        User.objects.create_user(
+            username='user3',
+            password='12345678',
+            email='user3@user3.com',
+            level=3.0,
+            gender='F',
+            singles=True,
+            doubles=True,
+        )
+        self.assertEqual(User.objects.count(), 4)
+        response = self.client.post('/matches')
         content = json.loads(response.content)
-        self.assertEqual(len(content['new_matches']), 1)
+        self.assertEqual(len(content['new_matches']), 4)
+        doubles_new_match = [x for x in content['new_matches'] if x['type'] == 'D']
+        self.assertEqual(len(doubles_new_match), 1)
+        self.assertEqual(len(doubles_new_match[0]['match']), 4)
+        single_new_matches = [x for x in content['new_matches'] if x['type'] == 'S']
+        self.assertEqual(len(single_new_matches), 3)
 
     def test_index_not_logged_in(self):
         self.client.logout()
@@ -82,7 +102,6 @@ class TestSum(TestCase):
             gender='F',
             singles=True,
             doubles=True,
-            mixed_doubles=True
         )
 
         match = Match.objects.create(
@@ -92,7 +111,7 @@ class TestSum(TestCase):
         match.match.add(user, self.user)
         match.save()
 
-        response = self.client.get('/match/' + str(match.id))
+        response = self.client.put('/match/' + str(match.id))
         content = json.loads(response.content)
         self.assertIsNotNone(content)
 
@@ -105,7 +124,6 @@ class TestSum(TestCase):
             gender='F',
             singles=True,
             doubles=True,
-            mixed_doubles=True
         )
 
         match = Match.objects.create(

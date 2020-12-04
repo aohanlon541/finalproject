@@ -17,7 +17,6 @@ class User(AbstractUser):
     gender = models.CharField(max_length=2, choices=gender, null=True)
     singles = models.BooleanField(null=True)
     doubles = models.BooleanField(null=True)
-    mixed_doubles = models.BooleanField(null=True)
     picture = models.CharField(max_length=1000, null=True)
 
     def serialize(self):
@@ -29,7 +28,6 @@ class User(AbstractUser):
             'gender': self.gender,
             'singles': self.singles,
             'doubles': self.doubles,
-            'mixed_double': self.mixed_doubles,
             'picture': self.picture
         }
 
@@ -39,8 +37,7 @@ class User(AbstractUser):
 class Match(models.Model):
     game_types = (
         ('S', "Singles"),
-        ('D', "Doubles"),
-        ('MD', "Mixed Doubles"),
+        ('D', "Doubles")
     )
     id = models.AutoField(primary_key=True, blank=True)
     match = models.ManyToManyField('User', related_name='match_group')

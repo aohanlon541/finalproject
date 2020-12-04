@@ -20,6 +20,7 @@ def index(request):
         return HttpResponseRedirect(reverse("login"))
 
 
+@csrf_exempt
 @login_required
 def get_matches(request):
     util.create_new_matches(request.user)
