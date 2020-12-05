@@ -70,13 +70,14 @@ def get_match(request, match_id):
     if request.method == "PUT":
         try:
             match = Match.objects.get(id=match_id)
-            messages = Message.objects.filter(match=match)
+            messages = Message.objects.filter(match=match).order_by('created_date')
             users = User.objects.filter(id__in=match.serialize()['match_ids'])
 
             match.new = False
             match.save()
 
             return JsonResponse({
+                'current_user': request.user.email,
                 'match': match.serialize(),
                 'users': [match_users.serialize() for match_users in users],
                 'messages': [match_message.serialize() for match_message in messages]

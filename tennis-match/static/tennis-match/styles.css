@@ -1,9 +1,63 @@
+textarea {
+    width: 100%;
+}
+
+#match-view {
+    display: block;
+    border: #333 solid 2px;
+    margin: 30px auto;
+    border-radius: 10px;
+    background-color: white;
+    padding: 0 100px;
+}
+
 .image-container {
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .profile-picture {
     max-width: 20em;
     height: auto;
+    margin: 5px;
+}
+
+.pretitle-profile {
+    font-style: italic;
+    margin-top: 20px;
+    color: #70875e;
+    font-weight: bolder;
+}
+
+.message-author {
+    font-weight: bold;
+}
+
+.message-created-date {
+    font-size: .75em;
+}
+
+.list-group {
+    margin-bottom: 50px;
+}
+
+.list-group-item {
+    position: relative;
+}
+
+.edit-icon-span {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.message-form {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.message-form > .form-group {
+    margin-bottom: 0;
 }
