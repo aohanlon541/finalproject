@@ -2,6 +2,12 @@
 {% load static %}
 
 {% block body %}
+    <div class="error-div">
+        <div class="alert alert-danger" role="alert">
+            Error! Action not complete.
+        </div>
+    </div>
+
     <div id="complete-user-info">
         <h4>Complete Your Profile & Get Matches</h4>
         <form>
@@ -44,12 +50,6 @@
             <input class="form-check-input" type="checkbox" value="doubles" id="doubles">
             <label class="form-check-label" for="doubles">
                 Doubles
-            </label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="mixedDoubles" id="mixedDoubles">
-            <label class="form-check-label" for="mixedDoubles">
-                Mixed Doubles
             </label>
         </div>
         <div class="form-group">

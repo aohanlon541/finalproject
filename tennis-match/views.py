@@ -56,7 +56,6 @@ def edit_user(request):
             user.gender = data['gender']
             user.singles = data['singles']
             user.doubles = data['doubles']
-            user.mixed_doubles = data['mixed_doubles']
             user.picture = data['picture']
             user.save()
             return HttpResponse(status=200)

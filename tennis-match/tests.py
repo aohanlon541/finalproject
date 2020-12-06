@@ -87,11 +87,17 @@ class TestSum(TestCase):
         single_new_matches = [x for x in content['new_matches'] if x['type'] == 'S']
         self.assertEqual(len(single_new_matches), 3)
 
-    def test_index_not_logged_in(self):
-        self.client.logout()
-        response = self.client.get('/')
-
-    #   need to add check for html page
+    def test_update_user(self):
+        response = self.client.post('/edit-user', data=json.dumps(
+            dict(
+                level=3.5,
+                gender='F',
+                singles=True,
+                doubles=True,
+                picture='www.picture.com'
+            )), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(User.objects.count(), 1)
 
     def test_get_match(self):
         user = User.objects.create_user(
@@ -111,9 +117,19 @@ class TestSum(TestCase):
         match.match.add(user, self.user)
         match.save()
 
+        message = Message.objects.create(
+            text="test message",
+            match=match,
+            created_by=self.user
+        )
+
         response = self.client.put('/match/' + str(match.id))
         content = json.loads(response.content)
         self.assertIsNotNone(content)
+        self.assertIsNotNone(content['match'])
+        self.assertIsNotNone(content['current_user'])
+        self.assertIsNotNone(content['messages'])
+        self.assertIsNotNone(content['users'])
 
     def test_add_edit_message(self):
         user = User.objects.create_user(
@@ -146,10 +162,7 @@ class TestSum(TestCase):
                                          data=json.dumps(
                                              dict(id=message.id, text='This is a test post 2 - edited!')),
                                          content_type='application/json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(edit_response.status_code, 200)
         self.assertEqual(Message.objects.filter(match=match).count(), 1)
         edited_message = Message.objects.get(match=match)
         self.assertEqual(edited_message.text, 'This is a test post 2 - edited!')
-
-    # def test_update_user(self):
-

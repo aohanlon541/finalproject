@@ -16,12 +16,6 @@ class UserManager(BaseUserManager):
         user = self.model(email=email, **extra_fields)
         user.username = email
         user.set_password(password.value())
-        # extra_fields.setdefault('level', level)
-        # extra_fields.setdefault('gender', gender)
-        # extra_fields.setdefault('singles', singles)
-        # extra_fields.setdefault('doubles', doubles)
-        # extra_fields.setdefault('mixed_doubles', mixed_doubles)
-        # extra_fields.setdefault('picture', picture)
         user.save()
         return user
 
@@ -34,7 +28,6 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('gender', 'F')
         extra_fields.setdefault('singles', True)
         extra_fields.setdefault('doubles', True)
-        extra_fields.setdefault('mixed_doubles', True)
 
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(_('Superuser must have is_superuser=True.'))

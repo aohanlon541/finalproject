@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#complete-user-info').style.display = 'none';
     document.querySelector('#match-view').style.display = 'none';
+    document.querySelector('#error-div').style.display = 'none';
 
     document.querySelector('#new-matches-nav-link').addEventListener('click', () => load_new())
     document.querySelector('#existing-matches-nav-link').addEventListener('click', () => load_existing())
@@ -15,6 +16,7 @@ function load_matches() {
     }).then(response => response.json()
     ).then((results) => {
         if (results.user['gender'] === null) {
+                document.querySelector('#error-div').style.display = 'none';
                 document.querySelector('#complete-user-info').style.display = 'block';
                 document.querySelector('#new-matches-div').style.display = 'none';
                 document.querySelector('#existing-matches-div').style.display = 'none';
@@ -32,7 +34,7 @@ function load_matches() {
             const matchElement = create_match_card(match);
             existingMatchesDiv.appendChild(matchElement);
         });
-   });
+    }).catch(() => document.querySelector('#error-div').style.display = 'block');
 }
 
 function load_new() {
@@ -42,16 +44,17 @@ function load_new() {
     document.querySelector('#match-view').style.display = 'none';
 
     fetch('/new-matches', {
-        method: 'GET',
+        method: 'PUT',
     }).then(response => response.json()
     ).then((results) => {
+        document.querySelector('#error-div').style.display = 'none';
         let newMatchesDiv = document.querySelector('#new-matches');
         newMatchesDiv.innerHTML = '';
         results['new_matches'].forEach(match => {
             const matchElement = create_match_card(match);
             newMatchesDiv.appendChild(matchElement);
         });
-    });
+    }).catch(() => document.querySelector('#error-div').style.display = 'block')
 }
 
 function load_existing() {
@@ -61,7 +64,7 @@ function load_existing() {
     document.querySelector('#match-view').style.display = 'none';
 
     fetch('/existing-matches', {
-        method: 'GET',
+        method: 'PUT',
     }).then(response => response.json()
     ).then((results) => {
         let newMatchesDiv = document.querySelector('#new-matches');
@@ -70,7 +73,7 @@ function load_existing() {
             const matchElement = create_match_card(match);
             newMatchesDiv.appendChild(matchElement);
         });
-    });
+    }).catch(() => document.querySelector('#error-div').style.display = 'block')
 }
 
 function load_match(id) {
@@ -84,6 +87,7 @@ function load_match(id) {
         method: 'PUT'
     }).then(response => response.json()
     ).then((results) => {
+        document.querySelector('#error-div').style.display = 'none';
         const matchView = document.querySelector('#match-view');
         matchView.innerHTML = '';
         const body = create_match_view(results);
@@ -91,7 +95,7 @@ function load_match(id) {
         matchView.appendChild(body);
         matchView.appendChild(document.createElement('hr'));
         matchView.appendChild(messages);
-    });
+    }).catch(() => document.querySelector('#error-div').style.display = 'block')
 }
 
 function update_user() {
@@ -103,7 +107,7 @@ function update_user() {
     }).then(() => {
         document.querySelector('#complete-user-info').style.display = 'none';
         load_matches();
-    });
+    }).catch(() => document.querySelector('#error-div').style.display = 'block');
 }
 
 function add_message(matchId, currentUser) {
@@ -118,7 +122,7 @@ function add_message(matchId, currentUser) {
         const newMessage = append_message(results['new_message'], currentUser);
         document.querySelector('#message-container').appendChild(newMessage);
         document.querySelector('#message-textarea').value = '';
-    });
+    }).catch(() => document.querySelector('#error-div').style.display = 'block');
 }
 
 function post_edit_message(matchId, messageId) {
@@ -136,7 +140,7 @@ function post_edit_message(matchId, messageId) {
         const messageText = document.getElementById(`${updatedMessage['id']}-message-text`);
         messageText.innerHTML = updatedMessage['text'];
         messageText.replaceWith(messageText);
-    });
+    }).catch(() => document.querySelector('#error-div').style.display = 'block');
 }
 
 function edit_message(matchId, messageId) {
@@ -306,7 +310,6 @@ function map_edit_user() {
         'gender': document.querySelector('input[name=gender]:checked').value,
         'singles': document.querySelector('#singles').checked,
         'doubles': document.querySelector('#doubles').checked,
-        'mixed_doubles': document.querySelector('#mixedDoubles').checked,
         'picture': document.querySelector('#picture').value,
     });
 }
