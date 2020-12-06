@@ -1,4 +1,4 @@
-# finalproject - Match Maker
+# Final Project - Match Maker
 
 This project is a web application that matches users for matches based on their gender, USTA level, and interest in singles or doubles. 
 Groups of like two will be matched up for single matches and groups of like four will be matched up for doubles matches. 
